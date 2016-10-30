@@ -1,0 +1,59 @@
+---
+
+- name: Configure swap file swappiness
+  sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    state: 'present'
+    reload: True
+  with_dict: '{{ swapfile_sysctl }}'
+
+- name: Disable swap file
+  shell: test -f {{ swapfile_path }} && swapoff {{ swapfile_path }} || true
+  changed_when: False
+  when: swapfile_delete
+
+- name: Create swap file
+  command: |
+    {% if swapfile_fallocate %}
+    fallocate -l {{ ((swapfile_size)|int * 1024 * 1024) }} {{ swapfile_path }}
+    {% else %}
+    dd if=/dev/zero of={{ swapfile_path }} bs=1M count={{ swapfile_size }}
+    {% endif %}
+  args:
+    creates: '{{ swapfile_path }}'
+  register: swapfile_register_create
+  when: not swapfile_delete
+
+- name: Set proper permissions
+  file:
+    path: '{{ swapfile_path }}'
+    state: 'file'
+    owner: 'root'
+    group: 'root'
+    mode: '0600'
+  when: (not swapfile_delete and not ansible_check_mode)
+
+- name: Initialize swap file
+  command: mkswap {{ swapfile_path }}
+  when: (swapfile_register_create | changed and not swapfile_delete)
+
+- name: Enable swap files
+  command: swapon {{ swapfile_path }}
+  when: (swapfile_register_create | changed and not swapfile_delete)
+
+- name: Manage swap file in /etc/fstab
+  mount:
+    src: '{{ swapfile_path }}'
+    name: 'none'
+    fstype: 'swap'
+    opts: 'sw,nofail'
+    dump: '0'
+    passno: '0'
+    state: '{{ "absent" if swapfile_delete else "present" }}'
+
+- name: Remove swap file
+  file:
+    path: '{{ swapfile_path }}'
+    state: 'absent'
+  when: swapfile_delete

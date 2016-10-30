@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+
+  vars:
+    swapfile_path: '/swapfile'
+
+  pre_tasks:
+    - name: Fake a /swapfile because Travis-CI disallows swap files
+      command: touch /swapfile
+      args:
+        creates: '/swapfile'
+
+  roles:
+    - this_role
