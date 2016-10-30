@@ -1,4 +1,4 @@
-## What is ansible-swapfile?
+## What is ansible-swapfile? [![Build Status](https://secure.travis-ci.org/nickjj/ansible-swapfile.png)](http://travis-ci.org/nickjj/ansible-swapfile)
 
 It is an [Ansible](http://www.ansible.com/home) role to create and configure
 a swap file.
