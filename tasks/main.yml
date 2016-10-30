@@ -38,7 +38,7 @@
   command: mkswap {{ swapfile_path }}
   when: (swapfile_register_create | changed and not swapfile_delete)
 
-- name: Enable swap files
+- name: Enable swap file
   command: swapon {{ swapfile_path }}
   when: (swapfile_register_create | changed and not swapfile_delete)
 
