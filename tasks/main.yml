@@ -1,6 +1,6 @@
 ---
 
-- name: Configure swap file swappiness
+- name: Configure swap file swappiness and cache pressure
   sysctl:
     name: '{{ item.key }}'
     value: '{{ item.value }}'
