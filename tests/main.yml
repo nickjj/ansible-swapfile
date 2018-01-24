@@ -1,15 +1,8 @@
 ---
 
-- hosts: all
+- hosts: "all"
 
-  vars:
-    swapfile_path: '/swapfile'
-
-  pre_tasks:
-    - name: Fake a /swapfile because Travis-CI disallows swap files
-      command: touch /swapfile
-      args:
-        creates: '/swapfile'
+  # Travis doesn't allow swap files, so there are no role specific tests.
 
   roles:
-    - this_role
+    - "role_under_test"
