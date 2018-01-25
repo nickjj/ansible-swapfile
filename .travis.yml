@@ -12,6 +12,6 @@ script:
   - wget -O ${PWD}/tests/test.sh https://gist.githubusercontent.com/nickjj/d12353b5b601e33cd62fda111359957a/raw
   - chmod +x ${PWD}/tests/test.sh
 
-  # Run tests. It's commented now because running this in Docker fails due to
-  # swap files not being able to be mounted inside of Docker mounts.
-  - ${PWD}/tests/test.sh
+  # Run tests. Leave the container around after the test because cleaning it up
+  # will make Docker angry.
+  - cleanup=false ${PWD}/tests/test.sh
